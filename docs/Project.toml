@@ -1,0 +1,3 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+OrdinalStatistics = "5801a30c-0409-40f3-ba20-ee6d36d7c4c2"
