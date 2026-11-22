@@ -9,7 +9,7 @@ makedocs(;
     sitename="OrdinalStatistics.jl",
     format=Documenter.HTML(;
         canonical="https://MiguelGMorais.github.io/OrdinalStatistics.jl",
-        edit_link="master",
+        edit_link="main",
         assets=String[],
     ),
     pages=[
@@ -19,5 +19,5 @@ makedocs(;
 
 deploydocs(;
     repo="github.com/MiguelGMorais/OrdinalStatistics.jl",
-    devbranch="master",
+    devbranch="main",
 )
