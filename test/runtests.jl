@@ -31,6 +31,29 @@ const CIVIL = [11, 12, 17, 3, 1, 4, 0]
         @test_throws ArgumentError OrdinalDistribution([0.5, NaN])
     end
 
+    @testset "fromresponses" begin
+        answers = [4, 5, 5, 1, 4, 5, 3, 5]
+        d = fromresponses(answers, 5)
+        @test d == OrdinalDistribution([1, 0, 1, 2, 4])
+        @test nobs(d) == 8
+        @test ncategories(d) == 5
+        @test ordinal_index(d) ≈ ordinal_index([count(==(k), answers) for k in 1:5])
+        # empty top categories still count towards m
+        @test ncategories(fromresponses([1, 2, 1], 4)) == 4
+        # the democracy series rebuilt from individual country scores
+        political = reduce(vcat, [fill(k, n) for (k, n) in enumerate(POLITICAL)])
+        @test fromresponses(political, 7) == OrdinalDistribution(POLITICAL)
+        # any iterable works; missing values are dropped only explicitly
+        @test fromresponses((k for k in (1, 2, 2)), 3) == OrdinalDistribution([1, 2, 0])
+        @test nobs(fromresponses(skipmissing([2, missing, 3]), 3)) == 2
+        @test_throws ArgumentError fromresponses([2, missing, 3], 3)
+        @test_throws ArgumentError fromresponses([1, 2, 6], 5)
+        @test_throws ArgumentError fromresponses([0, 1], 5)
+        @test_throws ArgumentError fromresponses([1.0, 2.0], 5)
+        @test_throws ArgumentError fromresponses(Int[], 5)
+        @test_throws ArgumentError fromresponses([1, 1], 1)
+    end
+
     @testset "location" begin
         @test mean_charge([0.5, 0, 0, 0, 0.5]) ≈ 0.6
         @test mean_charge([0.1, 0.5, 0.1, 0.2, 0.1]) ≈ 0.54

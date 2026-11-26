@@ -45,6 +45,39 @@ OrdinalDistribution(x::AbstractVector{<:Real}) = OrdinalDistribution{float(eltyp
 OrdinalDistribution(d::OrdinalDistribution) = d
 
 """
+    fromresponses(answers, m::Integer)
+
+Build an [`OrdinalDistribution`](@ref) from raw responses, one per respondent, coded as
+category positions `1, …, m` (`1` the worst category, `m` the best). The absolute frequency
+of category `xⱼ` is `nⱼ = #{i : answersᵢ = j}`, and [`nobs`](@ref) is the number of responses.
+
+`answers` may be any iterable of integers. Missing values are not dropped silently: pass
+`skipmissing(answers)` to discard them explicitly. Categories with no responses get
+frequency zero.
+
+# Examples
+```jldoctest
+julia> d = fromresponses([4, 5, 5, 1, 4, 5, 3, 5], 5)
+OrdinalDistribution([0.125, 0.0, 0.125, 0.25, 0.5]; n = 8)
+
+julia> fromresponses(skipmissing([2, missing, 3]), 3) |> nobs
+2
+```
+"""
+function fromresponses(answers, m::Integer)
+    m ≥ 2 || throw(ArgumentError("an ordinal variable needs at least 2 categories, got $m"))
+    counts = zeros(Int, m)
+    for a in answers
+        a isa Integer ||
+            throw(ArgumentError("responses must be integer category positions, got $(repr(a))"))
+        1 ≤ a ≤ m || throw(ArgumentError("response $a is outside the categories 1:$m"))
+        counts[a] += 1
+    end
+    sum(counts) > 0 || throw(ArgumentError("there are no responses"))
+    return OrdinalDistribution(counts)
+end
+
+"""
     frequencies(d::OrdinalDistribution)
 
 Relative frequencies `(f₁, …, f_m)`, ordered from the worst to the best category.

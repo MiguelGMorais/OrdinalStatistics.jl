@@ -10,7 +10,7 @@ relative frequencies.
 """
 module OrdinalStatistics
 
-export OrdinalDistribution, frequencies, ncategories, nobs
+export OrdinalDistribution, fromresponses, frequencies, ncategories, nobs
 export mean_charge, centrum, ordinal_index, index_thresholds
 export modal_variability, gini_simpson, renyi_variability, normalized_entropy
 export AmbiguousDualError, dual, codual
