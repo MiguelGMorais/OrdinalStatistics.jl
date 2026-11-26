@@ -6,7 +6,14 @@ on:
 jobs:
   CompatHelper:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v3
+        with:
+          version: '1'
       - name: Install CompatHelper
         run: using Pkg; Pkg.add("CompatHelper")
         shell: julia --color=yes {0}
