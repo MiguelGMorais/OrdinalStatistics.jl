@@ -14,6 +14,16 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
+        "Getting started" => "getting_started.md",
+        "Manual" => [
+            "Ordinal distributions" => "manual/distributions.md",
+            "Location" => "manual/location.md",
+            "Variability" => "manual/variability.md",
+            "Dual and codual" => "manual/duality.md",
+            "The c-index" => "manual/cindex.md",
+        ],
+        "References" => "references.md",
+        "Function index" => "api.md",
     ],
 )
 
