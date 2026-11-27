@@ -56,8 +56,9 @@ without ``q``. It has the closed form
 \Delta_q\Gamma = \frac{w_q}{1 - w_q}\left(\mathcal{I}_q - \Gamma\right).
 ```
 
-A question raises the c-index if and only if its index exceeds the c-index, and its impact
-grows with its weight.
+For a question with positive weight (``0 < w_q < 1``), the contribution is positive if and
+only if its index exceeds the c-index, and its magnitude grows with the weight. A question
+with zero weight has zero contribution.
 
 ```@example ci
 contribution(democracy)

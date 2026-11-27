@@ -71,7 +71,7 @@ exactly on a threshold when the centrum is a pair.
 index_thresholds(5)
 ```
 
-The voters' index (75.5) lies in ``(62.5, 87.5)``, the 4th cell — the centrum found above.
+The voters' index (75.625) lies in ``(62.5, 87.5)``, the 4th cell — the centrum found above.
 
 | ``m`` | thresholds on ``[0, 100]`` |
 |:--|:--|
