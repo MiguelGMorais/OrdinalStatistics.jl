@@ -40,8 +40,9 @@ normalized_entropy(x), normalized_entropy(y)
 
 !!! tip "Which one to use"
     Prefer [`gini_simpson`](@ref). It uses the whole distribution, has a direct
-    interpretation — ``1 - \sum_j f_j^2`` is the proportion of pairs of respondents who
-    gave **different** answers — and it is the variability behind the
+    interpretation — ``1 - \sum_j f_j^2`` is the proportion of ordered pairs of
+    respondents, drawn with replacement, who gave **different** answers — and it is the
+    variability behind the
     [dual and codual](duality.md) and the [c-index](cindex.md).
 
 The Rényi family generalizes the Gini–Simpson index (``\theta = 2``):
