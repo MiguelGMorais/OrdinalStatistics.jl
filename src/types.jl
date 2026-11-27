@@ -45,7 +45,8 @@ OrdinalDistribution(x::AbstractVector{<:Real}) = OrdinalDistribution{float(eltyp
 OrdinalDistribution(d::OrdinalDistribution) = d
 
 """
-    fromresponses(answers, m::Integer)
+    from_responses(answers, m::Integer)
+    from_responses(answers::CategoricalArray)
 
 Build an [`OrdinalDistribution`](@ref) from raw responses, one per respondent, coded as
 category positions `1, …, m` (`1` the worst category, `m` the best). The absolute frequency
@@ -55,16 +56,24 @@ of category `xⱼ` is `nⱼ = #{i : answersᵢ = j}`, and [`nobs`](@ref) is the 
 `skipmissing(answers)` to discard them explicitly. Categories with no responses get
 frequency zero.
 
+# CategoricalArrays
+
+When CategoricalArrays.jl is loaded, `answers` may also be an **ordered**
+`CategoricalArray` (or `skipmissing` of one). The order of its levels defines the
+categories `x₁ ≺ … ≺ x_m`, so the levels must run from worst to best, and `m` is the number
+of levels, including unused ones. An unordered array throws an `ArgumentError`. This method
+is provided by a package extension and adds no dependency to OrdinalStatistics.
+
 # Examples
 ```jldoctest
-julia> d = fromresponses([4, 5, 5, 1, 4, 5, 3, 5], 5)
+julia> d = from_responses([4, 5, 5, 1, 4, 5, 3, 5], 5)
 OrdinalDistribution([0.125, 0.0, 0.125, 0.25, 0.5]; n = 8)
 
-julia> fromresponses(skipmissing([2, missing, 3]), 3) |> nobs
+julia> from_responses(skipmissing([2, missing, 3]), 3) |> nobs
 2
 ```
 """
-function fromresponses(answers, m::Integer)
+function from_responses(answers, m::Integer)
     m ≥ 2 || throw(ArgumentError("an ordinal variable needs at least 2 categories, got $m"))
     counts = zeros(Int, m)
     for a in answers
@@ -95,8 +104,11 @@ ncategories(d::OrdinalDistribution) = length(d.freqs)
     nobs(d::OrdinalDistribution)
 
 Number of observations `n`, or `nothing` if `d` was built from relative frequencies.
+
+This is a method of `StatsAPI.nobs`, the function shared by the Julia statistics ecosystem
+(StatsBase, GLM, …), so it works together with those packages without name clashes.
 """
-nobs(d::OrdinalDistribution) = d.nobs
+StatsAPI.nobs(d::OrdinalDistribution) = d.nobs
 
 Base.:(==)(a::OrdinalDistribution, b::OrdinalDistribution) = a.freqs == b.freqs && a.nobs == b.nobs
 

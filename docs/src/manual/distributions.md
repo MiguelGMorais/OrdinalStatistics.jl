@@ -32,13 +32,45 @@ OrdinalDistribution([0.1, 0.5, 0.1, 0.2, 0.1])
 From **raw answers**, one per respondent, coded ``1, \dots, m``:
 
 ```@example dist
-fromresponses([3, 4, 4, 5, 2, 4], 5)
+from_responses([3, 4, 4, 5, 2, 4], 5)
 ```
 
 !!! tip "Plain vectors work too"
     You rarely need to build an `OrdinalDistribution` explicitly: every measure also
     accepts a frequency vector, e.g. `ordinal_index([5, 5, 50, 60, 80])`. Building it once
     is useful when you compute many measures on the same data.
+
+## Labelled answers with CategoricalArrays
+
+Survey data often arrive as labels ("low", "high", …) rather than codes. If you use
+[CategoricalArrays.jl](https://github.com/JuliaData/CategoricalArrays.jl), pass an
+**ordered** `CategoricalArray` directly. The order of its levels defines the categories,
+so declare them from worst to best:
+
+```@example dist
+using CategoricalArrays
+
+scale = ["none", "low", "some", "high", "full"]
+answers = categorical(["high", "full", "full", "none", "high", "full", "some", "full"];
+                      levels = scale, ordered = true)
+
+d = from_responses(answers)
+```
+
+Levels nobody chose ("low" here) still count, so ``m`` is always the number of levels:
+
+```@example dist
+ncategories(d), ordinal_index(d)
+```
+
+!!! warning "The array must be ordered"
+    An unordered `CategoricalArray` sorts its levels alphabetically ("full" ≺ "high" ≺
+    "low" ≺ …), which is meaningless as an ordinal scale. `from_responses` therefore rejects
+    it with an `ArgumentError`. Missing answers are treated as with plain vectors: use
+    `from_responses(skipmissing(answers))` to drop them explicitly.
+
+This support is provided by a package extension: OrdinalStatistics itself does not depend
+on CategoricalArrays, and the method becomes available only when both packages are loaded.
 
 ## Validation
 
@@ -57,8 +89,8 @@ end
 
 ```@docs
 OrdinalDistribution
-fromresponses
+from_responses
 frequencies
 ncategories
-nobs
+nobs(::OrdinalDistribution)
 ```

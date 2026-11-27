@@ -8,7 +8,7 @@ Modal variability `υ^∞ ∈ [0, 1]`:
 ```
 
 It is `0` iff `f` is concentrated and `1` iff `f` is uniform. It ignores changes outside the
-modal category; [`gini_simpson`](@ref) should usually be preferred.
+modal category; [`quadratic_variability`](@ref) should usually be preferred.
 
 Source: Souza & Peñaloza (2005), ch. II; Peñaloza (2011).
 
@@ -26,7 +26,7 @@ end
 modal_variability(x::AbstractVector{<:Real}) = modal_variability(OrdinalDistribution(x))
 
 """
-    gini_simpson(d)
+    quadratic_variability(d)
 
 Quadratic variability `υ² ∈ [0, 1]`, the normalized Gini–Simpson index (GSI), also called the
 *nominal variance*:
@@ -42,16 +42,16 @@ Source: Peñaloza (2011) (*nominal variance*); Peñaloza (2012a) (*Gini–Simpso
 
 # Examples
 ```jldoctest
-julia> round(gini_simpson([0.02, 0.10, 0.70, 0.18]), digits = 4)
+julia> round(quadratic_variability([0.02, 0.10, 0.70, 0.18]), digits = 4)
 0.6229
 ```
 """
-function gini_simpson(d::OrdinalDistribution)
+function quadratic_variability(d::OrdinalDistribution)
     f = frequencies(d)
     m = length(f)
     return m / (m - 1) * (1 - sum(abs2, f))
 end
-gini_simpson(x::AbstractVector{<:Real}) = gini_simpson(OrdinalDistribution(x))
+quadratic_variability(x::AbstractVector{<:Real}) = quadratic_variability(OrdinalDistribution(x))
 
 """
     renyi_variability(d, θ::Real)
@@ -63,7 +63,7 @@ Rényi variability of order `θ > 1`, normalized to `[0, 1]`:
 ```
 
 It is `0` iff `f` is concentrated and `1` iff `f` is uniform; `θ = 2` gives
-[`gini_simpson`](@ref).
+[`quadratic_variability`](@ref).
 
 Source: Souza & Peñaloza (2005), ch. II.
 
@@ -71,7 +71,7 @@ Source: Souza & Peñaloza (2005), ch. II.
 ```jldoctest
 julia> d = OrdinalDistribution([0.1, 0.5, 0.1, 0.2, 0.1]);
 
-julia> renyi_variability(d, 2) ≈ gini_simpson(d)
+julia> renyi_variability(d, 2) ≈ quadratic_variability(d)
 true
 ```
 """

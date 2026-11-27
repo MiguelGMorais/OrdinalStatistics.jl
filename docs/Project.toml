@@ -1,6 +1,8 @@
 [deps]
+CategoricalArrays = "324d7699-5711-5eae-9e2f-1d82baa6b597"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 OrdinalStatistics = "5801a30c-0409-40f3-ba20-ee6d36d7c4c2"
 
 [compat]
+CategoricalArrays = "0.10, 1"
 Documenter = "1.20.0"
