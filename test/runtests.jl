@@ -1,5 +1,6 @@
 using OrdinalStatistics
 using Test
+using CategoricalArrays
 
 # Reference data from the lecture notes (Peñaloza 2012a; Peñaloza & Macedo 2012).
 const EDUCATION = [
@@ -52,6 +53,29 @@ const CIVIL = [11, 12, 17, 3, 1, 4, 0]
         @test_throws ArgumentError fromresponses([1.0, 2.0], 5)
         @test_throws ArgumentError fromresponses(Int[], 5)
         @test_throws ArgumentError fromresponses([1, 1], 1)
+    end
+
+    @testset "CategoricalArrays extension" begin
+        scale = ["none", "low", "some", "high", "full"]
+        raw = ["high", "full", "full", "none", "high", "full", "some", "full"]
+        x = categorical(raw; levels = scale, ordered = true)
+        d = fromresponses(x)
+        # same as coding the answers by hand
+        @test d == fromresponses([4, 5, 5, 1, 4, 5, 3, 5], 5)
+        @test nobs(d) == 8
+        # unused levels ("low") keep m = 5
+        @test ncategories(d) == 5
+        @test frequencies(d)[2] == 0
+        # level order, not alphabetical order, defines the categories
+        @test ordinal_index(d) ≈ ordinal_index([1, 0, 1, 2, 4])
+        # unordered arrays are rejected: the order would be arbitrary
+        @test_throws ArgumentError fromresponses(categorical(raw; levels = scale))
+        # missing values: error unless dropped explicitly
+        xm = categorical([raw; missing]; levels = scale, ordered = true)
+        @test_throws ArgumentError fromresponses(xm)
+        @test fromresponses(skipmissing(xm)) == d
+        # measures accept the result directly
+        @test codual(fromresponses(categorical(["low", "low"]; levels = scale, ordered = true))) ≈ 0
     end
 
     @testset "location" begin

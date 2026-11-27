@@ -46,6 +46,7 @@ OrdinalDistribution(d::OrdinalDistribution) = d
 
 """
     fromresponses(answers, m::Integer)
+    fromresponses(answers::CategoricalArray)
 
 Build an [`OrdinalDistribution`](@ref) from raw responses, one per respondent, coded as
 category positions `1, …, m` (`1` the worst category, `m` the best). The absolute frequency
@@ -54,6 +55,14 @@ of category `xⱼ` is `nⱼ = #{i : answersᵢ = j}`, and [`nobs`](@ref) is the 
 `answers` may be any iterable of integers. Missing values are not dropped silently: pass
 `skipmissing(answers)` to discard them explicitly. Categories with no responses get
 frequency zero.
+
+# CategoricalArrays
+
+When CategoricalArrays.jl is loaded, `answers` may also be an **ordered**
+`CategoricalArray` (or `skipmissing` of one). The order of its levels defines the
+categories `x₁ ≺ … ≺ x_m`, so the levels must run from worst to best, and `m` is the number
+of levels, including unused ones. An unordered array throws an `ArgumentError`. This method
+is provided by a package extension and adds no dependency to OrdinalStatistics.
 
 # Examples
 ```jldoctest
