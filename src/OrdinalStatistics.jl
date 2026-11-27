@@ -10,16 +10,19 @@ relative frequencies.
 """
 module OrdinalStatistics
 
-export OrdinalDistribution, fromresponses, frequencies, ncategories, nobs
+import StatsAPI
+using StatsAPI: nobs
+
+export OrdinalDistribution, from_responses, frequencies, ncategories, nobs
 export mean_charge, centrum, ordinal_index, index_thresholds
-export modal_variability, gini_simpson, renyi_variability, normalized_entropy
+export modal_variability, quadratic_variability, renyi_variability, normalized_entropy
 export AmbiguousDualError, dual, codual
-export endogenous_weights, cindex, contribution
+export endogenous_weights, composite_index, contributions
 
 include("types.jl")
 include("location.jl")
 include("variability.jl")
 include("duality.jl")
-include("cindex.jl")
+include("composite_index.jl")
 
 end

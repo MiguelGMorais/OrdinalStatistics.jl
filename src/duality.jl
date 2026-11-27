@@ -18,7 +18,7 @@ end
 
 # Roots d₋ ≤ d₊ of the fundamental equation d² − d + υ²/4 = 0.
 function _fundamental_roots(d::OrdinalDistribution)
-    s = sqrt(max(zero(eltype(frequencies(d))), 1 - gini_simpson(d)))
+    s = sqrt(max(zero(eltype(frequencies(d))), 1 - quadratic_variability(d)))
     return (1 - s) / 2, (1 + s) / 2
 end
 
@@ -48,7 +48,7 @@ end
 Ordinal dual `⟨υ²⟩` of the Gini–Simpson variability: the weight of the **lower** category of
 the dual series, a dichotomous series `y₁ ≺ y₂` with weights `(⟨υ²⟩, ⟨υ²⟩ᶜ)` satisfying
 
-1. *isovariability*: the dual series has the same [`gini_simpson`](@ref) variability `υ²` as
+1. *isovariability*: the dual series has the same [`quadratic_variability`](@ref) variability `υ²` as
    `f`, so `⟨υ²⟩` is a root of the *fundamental equation of duality*
    ```math
    d^2 - d + \\frac{\\upsilon^2}{4} = 0, \\qquad d_\\pm = \\frac{1 \\pm \\sqrt{1-\\upsilon^2}}{2};

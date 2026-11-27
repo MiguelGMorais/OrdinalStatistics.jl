@@ -15,18 +15,18 @@ function _check_ordered(x::CategoricalArray)
     return nothing
 end
 
-function OrdinalStatistics.fromresponses(x::CategoricalArray)
+function OrdinalStatistics.from_responses(x::CategoricalArray)
     _check_ordered(x)
     any(ismissing, x) && throw(ArgumentError(
         "the responses contain missing values; drop them explicitly with " *
-        "`fromresponses(skipmissing(x))`"))
-    return fromresponses((levelcode(v) for v in x), length(levels(x)))
+        "`from_responses(skipmissing(x))`"))
+    return from_responses((levelcode(v) for v in x), length(levels(x)))
 end
 
-function OrdinalStatistics.fromresponses(s::Base.SkipMissing{<:CategoricalArray})
+function OrdinalStatistics.from_responses(s::Base.SkipMissing{<:CategoricalArray})
     x = s.x
     _check_ordered(x)
-    return fromresponses((levelcode(v) for v in s), length(levels(x)))
+    return from_responses((levelcode(v) for v in s), length(levels(x)))
 end
 
 end

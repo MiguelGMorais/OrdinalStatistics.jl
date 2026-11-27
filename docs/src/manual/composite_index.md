@@ -43,7 +43,7 @@ endogenous_weights(democracy)
 ```
 
 ```@example ci
-cindex(democracy)
+composite_index(democracy)
 ```
 
 ## Contribution of a question
@@ -61,7 +61,7 @@ only if its index exceeds the c-index, and its magnitude grows with the weight. 
 with zero weight has zero contribution.
 
 ```@example ci
-contribution(democracy)
+contributions(democracy)
 ```
 
 !!! note "When a contribution is `NaN`"
@@ -76,7 +76,7 @@ If a question's codual is ambiguous (see [Ambiguous cases](@ref)), so is the c-i
 ```@example ci
 retail = [fill(0.25, 4), [0, 1, 0, 0], [0, 0, 1, 0], [0.5, 0, 0, 0.5],
           [0, 0.2, 0.8, 0], [0, 0, 0.8, 0.2], [0.2, 0, 0.8, 0], [0.1, 0.1, 0.8, 0]]
-cindex(retail; ambiguous = :lower), cindex(retail; ambiguous = :upper)
+composite_index(retail; ambiguous = :lower), composite_index(retail; ambiguous = :upper)
 ```
 
 Reporting both values makes the ambiguity explicit.
@@ -85,6 +85,6 @@ Reporting both values makes the ambiguity explicit.
 
 ```@docs
 endogenous_weights
-cindex
-contribution
+composite_index
+contributions
 ```

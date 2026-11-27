@@ -53,7 +53,7 @@ Aggregate several ordinal questions into one composite index:
 
 ```@example home
 civil = [11, 12, 17, 3, 1, 4, 0]
-cindex([political, civil])    # democratic development index
+composite_index([political, civil])    # democratic development index
 ```
 
 ## Conventions
@@ -66,7 +66,7 @@ cindex([political, civil])    # democratic development index
 
 - Frequencies may be **absolute** (counts) or **relative** (proportions); they are
   normalized internally.
-- Raw answers, one per respondent, are converted with [`fromresponses`](@ref).
+- Raw answers, one per respondent, are converted with [`from_responses`](@ref).
 - Every measure accepts either an [`OrdinalDistribution`](@ref) or a plain vector.
 
 ## Contents
@@ -78,7 +78,7 @@ Pages = [
     "manual/location.md",
     "manual/variability.md",
     "manual/duality.md",
-    "manual/cindex.md",
+    "manual/composite_index.md",
     "references.md",
     "api.md",
 ]

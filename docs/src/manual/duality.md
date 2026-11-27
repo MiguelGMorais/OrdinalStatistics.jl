@@ -48,7 +48,7 @@ When the centrum is a pair ``\{x_c, x_{c+1}\}``, the masses compared are
 ```@example dual
 using OrdinalStatistics
 f = [0.1, 0.5, 0.1, 0.2, 0.1]
-gini_simpson(f), centrum(f)
+quadratic_variability(f), centrum(f)
 ```
 
 The roots are 0.3064 and 0.6936. The mass below the centrum, 0.7, exceeds the mass above

@@ -20,7 +20,7 @@ makedocs(;
             "Location" => "manual/location.md",
             "Variability" => "manual/variability.md",
             "Dual and codual" => "manual/duality.md",
-            "The c-index" => "manual/cindex.md",
+            "The c-index" => "manual/composite_index.md",
         ],
         "References" => "references.md",
         "Function index" => "api.md",

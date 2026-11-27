@@ -53,7 +53,7 @@ The **Gini–Simpson variability** measures how spread the answers are (0 = cons
 1 = uniform):
 
 ```@example edu
-gini_simpson(physical)
+quadratic_variability(physical)
 ```
 
 ## Step 2 — the codual
@@ -76,7 +76,7 @@ w = endogenous_weights(education)
 ```
 
 ```@example edu
-cindex(education)
+composite_index(education)
 ```
 
 ## Step 4 — which dimensions pull the index up or down?
@@ -85,7 +85,7 @@ The **contribution** ``Δ_q`` is how much the c-index would fall if question ``q
 removed. Positive values raise the composite index; negative values lower it.
 
 ```@example edu
-Δ = contribution(education)
+Δ = contributions(education)
 for (name, idx, wq, dq) in zip(functionings, ordinal_index.(education), w, Δ)
     println(rpad(name, 18), "index = ", lpad(round(idx; digits = 1), 5),
             "   weight = ", round(wq; digits = 3),
@@ -101,11 +101,11 @@ low category), while practical reason, with a worse distribution, lowers the c-i
 ## Working with raw survey answers
 
 Real surveys come as one answer per respondent. Code the answers as category positions
-``1, \dots, m`` and use [`fromresponses`](@ref):
+``1, \dots, m`` and use [`from_responses`](@ref):
 
 ```@example edu
 answers = [4, 5, 5, 1, 4, 5, 3, 5]      # 8 respondents, 5-point scale
-d = fromresponses(answers, 5)
+d = from_responses(answers, 5)
 ```
 
 ```@example edu
@@ -115,7 +115,7 @@ ordinal_index(d), nobs(d)
 Missing answers raise an error unless you drop them explicitly with `skipmissing`:
 
 ```@example edu
-fromresponses(skipmissing([4, missing, 5, 2]), 5)
+from_responses(skipmissing([4, missing, 5, 2]), 5)
 ```
 
 ## Next steps

@@ -20,6 +20,8 @@ const CIVIL = [11, 12, 17, 3, 1, 4, 0]
         d = OrdinalDistribution(POLITICAL)
         @test ncategories(d) == 7
         @test nobs(d) == 48
+        # `nobs` is StatsAPI's shared function, so it cannot clash with StatsBase's
+        @test nobs === OrdinalStatistics.StatsAPI.nobs
         @test sum(frequencies(d)) ≈ 1
         @test frequencies(d) ≈ POLITICAL ./ 48
         r = OrdinalDistribution([0.2, 0.3, 0.5])
@@ -32,36 +34,36 @@ const CIVIL = [11, 12, 17, 3, 1, 4, 0]
         @test_throws ArgumentError OrdinalDistribution([0.5, NaN])
     end
 
-    @testset "fromresponses" begin
+    @testset "from_responses" begin
         answers = [4, 5, 5, 1, 4, 5, 3, 5]
-        d = fromresponses(answers, 5)
+        d = from_responses(answers, 5)
         @test d == OrdinalDistribution([1, 0, 1, 2, 4])
         @test nobs(d) == 8
         @test ncategories(d) == 5
         @test ordinal_index(d) ≈ ordinal_index([count(==(k), answers) for k in 1:5])
         # empty top categories still count towards m
-        @test ncategories(fromresponses([1, 2, 1], 4)) == 4
+        @test ncategories(from_responses([1, 2, 1], 4)) == 4
         # the democracy series rebuilt from individual country scores
         political = reduce(vcat, [fill(k, n) for (k, n) in enumerate(POLITICAL)])
-        @test fromresponses(political, 7) == OrdinalDistribution(POLITICAL)
+        @test from_responses(political, 7) == OrdinalDistribution(POLITICAL)
         # any iterable works; missing values are dropped only explicitly
-        @test fromresponses((k for k in (1, 2, 2)), 3) == OrdinalDistribution([1, 2, 0])
-        @test nobs(fromresponses(skipmissing([2, missing, 3]), 3)) == 2
-        @test_throws ArgumentError fromresponses([2, missing, 3], 3)
-        @test_throws ArgumentError fromresponses([1, 2, 6], 5)
-        @test_throws ArgumentError fromresponses([0, 1], 5)
-        @test_throws ArgumentError fromresponses([1.0, 2.0], 5)
-        @test_throws ArgumentError fromresponses(Int[], 5)
-        @test_throws ArgumentError fromresponses([1, 1], 1)
+        @test from_responses((k for k in (1, 2, 2)), 3) == OrdinalDistribution([1, 2, 0])
+        @test nobs(from_responses(skipmissing([2, missing, 3]), 3)) == 2
+        @test_throws ArgumentError from_responses([2, missing, 3], 3)
+        @test_throws ArgumentError from_responses([1, 2, 6], 5)
+        @test_throws ArgumentError from_responses([0, 1], 5)
+        @test_throws ArgumentError from_responses([1.0, 2.0], 5)
+        @test_throws ArgumentError from_responses(Int[], 5)
+        @test_throws ArgumentError from_responses([1, 1], 1)
     end
 
     @testset "CategoricalArrays extension" begin
         scale = ["none", "low", "some", "high", "full"]
         raw = ["high", "full", "full", "none", "high", "full", "some", "full"]
         x = categorical(raw; levels = scale, ordered = true)
-        d = fromresponses(x)
+        d = from_responses(x)
         # same as coding the answers by hand
-        @test d == fromresponses([4, 5, 5, 1, 4, 5, 3, 5], 5)
+        @test d == from_responses([4, 5, 5, 1, 4, 5, 3, 5], 5)
         @test nobs(d) == 8
         # unused levels ("low") keep m = 5
         @test ncategories(d) == 5
@@ -69,13 +71,13 @@ const CIVIL = [11, 12, 17, 3, 1, 4, 0]
         # level order, not alphabetical order, defines the categories
         @test ordinal_index(d) ≈ ordinal_index([1, 0, 1, 2, 4])
         # unordered arrays are rejected: the order would be arbitrary
-        @test_throws ArgumentError fromresponses(categorical(raw; levels = scale))
+        @test_throws ArgumentError from_responses(categorical(raw; levels = scale))
         # missing values: error unless dropped explicitly
         xm = categorical([raw; missing]; levels = scale, ordered = true)
-        @test_throws ArgumentError fromresponses(xm)
-        @test fromresponses(skipmissing(xm)) == d
+        @test_throws ArgumentError from_responses(xm)
+        @test from_responses(skipmissing(xm)) == d
         # measures accept the result directly
-        @test codual(fromresponses(categorical(["low", "low"]; levels = scale, ordered = true))) ≈ 0
+        @test codual(from_responses(categorical(["low", "low"]; levels = scale, ordered = true))) ≈ 0
     end
 
     @testset "location" begin
@@ -116,23 +118,23 @@ const CIVIL = [11, 12, 17, 3, 1, 4, 0]
         y = [0.01, 0.28, 0.70, 0.01]
         @test modal_variability(x) ≈ 0.4
         @test modal_variability(y) ≈ 0.4
-        @test gini_simpson(x) ≈ 0.6229 atol = 1e-4
-        @test gini_simpson(y) ≈ 0.5752 atol = 1e-4
+        @test quadratic_variability(x) ≈ 0.6229 atol = 1e-4
+        @test quadratic_variability(y) ≈ 0.5752 atol = 1e-4
         @test normalized_entropy(x) ≈ 0.6253 atol = 1e-4
         @test normalized_entropy(y) ≈ 0.5036 atol = 1e-4
-        @test gini_simpson(POLITICAL) ≈ 0.9236 atol = 1e-4
-        @test gini_simpson(CIVIL) ≈ 0.8730 atol = 1e-4
-        @test gini_simpson([0.1, 0.5, 0.1, 0.2, 0.1]) ≈ 0.85
+        @test quadratic_variability(POLITICAL) ≈ 0.9236 atol = 1e-4
+        @test quadratic_variability(CIVIL) ≈ 0.8730 atol = 1e-4
+        @test quadratic_variability([0.1, 0.5, 0.1, 0.2, 0.1]) ≈ 0.85
 
-        for v in (modal_variability, gini_simpson, normalized_entropy, q -> renyi_variability(q, 3))
+        for v in (modal_variability, quadratic_variability, normalized_entropy, q -> renyi_variability(q, 3))
             @test v([0, 0, 1, 0]) ≈ 0 atol = 1e-12
             @test v(fill(0.25, 4)) ≈ 1
         end
-        @test renyi_variability(x, 2) ≈ gini_simpson(x)
+        @test renyi_variability(x, 2) ≈ quadratic_variability(x)
         @test_throws DomainError renyi_variability(x, 1)
         @test_throws DomainError renyi_variability(x, Inf)
         # ordering υ² ≥ υ^∞ (exercise, ch. 2)
-        @test gini_simpson(x) ≥ modal_variability(x)
+        @test quadratic_variability(x) ≥ modal_variability(x)
     end
 
     @testset "dual and codual" begin
@@ -160,7 +162,7 @@ const CIVIL = [11, 12, 17, 3, 1, 4, 0]
         # fundamental equation: d² − d + υ²/4 = 0
         for f in EDUCATION
             d = dual(f)
-            @test d^2 - d + gini_simpson(f) / 4 ≈ 0 atol = 1e-12
+            @test d^2 - d + quadratic_variability(f) / 4 ≈ 0 atol = 1e-12
         end
 
         # retail Q4: ambiguous dualization
@@ -178,43 +180,43 @@ const CIVIL = [11, 12, 17, 3, 1, 4, 0]
 
     @testset "c-index" begin
         # Peñaloza (2012a), education
-        @test cindex(EDUCATION) ≈ 54.92 atol = 5e-3
+        @test composite_index(EDUCATION) ≈ 54.92 atol = 5e-3
         @test all(isapprox.(endogenous_weights(EDUCATION),
                             [0.292, 0.0, 0.057, 0.252, 0.089, 0.229, 0.081]; atol = 1e-3))
         @test sum(endogenous_weights(EDUCATION)) ≈ 1
-        Δ = contribution(EDUCATION)
+        Δ = contributions(EDUCATION)
         @test all(isapprox.(Δ, [8.28, 0.0, -1.79, 6.78, -1.22, -7.41, -2.63]; atol = 5e-3))
         # Σ (1 − w_q) Δ_q = 0
         w = endogenous_weights(EDUCATION)
         @test sum((1 .- w) .* Δ) ≈ 0 atol = 1e-10
         # definition: Δ_q = Γ − Γ_{−q}
-        Γ = cindex(EDUCATION)
+        Γ = composite_index(EDUCATION)
         for q in (1, 3, 5)
-            @test Δ[q] ≈ Γ - cindex(EDUCATION[setdiff(1:7, q)])
+            @test Δ[q] ≈ Γ - composite_index(EDUCATION[setdiff(1:7, q)])
         end
 
         # Peñaloza & Macedo (2012), democracy
         dem = [POLITICAL, CIVIL]
         @test all(isapprox.(endogenous_weights(dem), [0.5293, 0.4707]; atol = 1e-4))
-        @test cindex(dem) ≈ 30.55 atol = 5e-3
+        @test composite_index(dem) ≈ 30.55 atol = 5e-3
 
         # questions with different numbers of categories
-        @test cindex([[0, 0, 1], [0, 0, 0, 1]]) ≈ 100
+        @test composite_index([[0, 0, 1], [0, 0, 0, 1]]) ≈ 100
 
         # retail: Q4 makes the c-index ambiguous
         retail = [fill(0.25, 4), [0, 1, 0, 0], [0, 0, 1, 0], [0.5, 0, 0, 0.5],
                   [0, 0.2, 0.8, 0], [0, 0, 0.8, 0.2], [0.2, 0, 0.8, 0], [0.1, 0.1, 0.8, 0]]
         @test ordinal_index.(retail) ≈ [50, 100 / 3, 200 / 3, 50, 60, 220 / 3, 160 / 3, 170 / 3]
-        @test_throws AmbiguousDualError cindex(retail)
-        @test cindex(retail; ambiguous = :upper) ≈ 61.20 atol = 5e-3
-        @test cindex(retail; ambiguous = :lower) ≈ 63.38 atol = 5e-3
+        @test_throws AmbiguousDualError composite_index(retail)
+        @test composite_index(retail; ambiguous = :upper) ≈ 61.20 atol = 5e-3
+        @test composite_index(retail; ambiguous = :lower) ≈ 63.38 atol = 5e-3
 
         # degenerate questionnaires
-        @test_throws ArgumentError cindex(Vector{Float64}[])
-        @test_throws DomainError cindex([[1, 0, 0], [0, 1, 0, 0, 0]])
-        @test isnan(only(contribution([[0, 0, 1]])))
+        @test_throws ArgumentError composite_index(Vector{Float64}[])
+        @test_throws DomainError composite_index([[1, 0, 0], [0, 1, 0, 0, 0]])
+        @test isnan(only(contributions([[0, 0, 1]])))
 
         # equal coduals ⇒ arithmetic mean of the indices (exercise, ch. 13)
-        @test cindex([[0, 0, 1, 0], [0, 0, 0, 1]]) ≈ (200 / 3 + 100) / 2
+        @test composite_index([[0, 0, 1, 0], [0, 0, 0, 1]]) ≈ (200 / 3 + 100) / 2
     end
 end

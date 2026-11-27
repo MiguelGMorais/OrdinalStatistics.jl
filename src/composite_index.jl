@@ -30,7 +30,7 @@ function endogenous_weights(qs; kw...)
 end
 
 """
-    cindex(qs; ambiguous = :error, atol = √eps)
+    composite_index(qs; ambiguous = :error, atol = √eps)
 
 Composite index (*c-index*) `Γ(𝒬)` of a questionnaire of ordinal questions: the average of
 the questions' [`ordinal_index`](@ref)es weighted by their [`endogenous_weights`](@ref),
@@ -47,20 +47,20 @@ Source: Peñaloza (2012a); Peñaloza & Macedo (2012); Peñaloza (2013).
 ```jldoctest
 julia> qs = [[7, 13, 13, 5, 8, 2, 0], [11, 12, 17, 3, 1, 4, 0]];  # democracy, 1979
 
-julia> round(cindex(qs), digits = 2)
+julia> round(composite_index(qs), digits = 2)
 30.55
 ```
 """
-function cindex(qs; kw...)
+function composite_index(qs; kw...)
     ds = _questionnaire(qs)
     w = endogenous_weights(ds; kw...)
     return sum(w .* ordinal_index.(ds))
 end
 
 """
-    contribution(qs; ambiguous = :error, atol = √eps)
+    contributions(qs; ambiguous = :error, atol = √eps)
 
-Contribution `Δ_q Γ = Γ − Γ_{−q}` of each question to the [`cindex`](@ref), where `Γ_{−q}` is
+Contribution `Δ_q Γ = Γ − Γ_{−q}` of each question to the [`composite_index`](@ref), where `Γ_{−q}` is
 the c-index without question `q` (weights recomputed):
 
 ```math
@@ -74,7 +74,7 @@ to [`codual`](@ref).
 
 Source: Peñaloza (2012a).
 """
-function contribution(qs; kw...)
+function contributions(qs; kw...)
     ds = _questionnaire(qs)
     w = endogenous_weights(ds; kw...)
     idx = ordinal_index.(ds)
